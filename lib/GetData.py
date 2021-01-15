@@ -14,7 +14,7 @@ def make_lag(n_seq, y):
     return X, torch.unsqueeze(y, -1)
 
 class BaseData(LightningDataModule):
-    def __init__(self, dataset, batch_size=32, val_split=0.2, test_split=0.2, random_seed=7):
+    def __init__(self, dataset, val_split=0.2, test_split=0.2, random_seed=7, **kwargs):
         super().__init__()
         n = len(dataset)
         n_val = int(n*val_split)
@@ -22,16 +22,16 @@ class BaseData(LightningDataModule):
         n_split = [n-n_val-n_test, n_val, n_test]
         gen = Generator().manual_seed(random_seed)
         self.train_data, self.val_data, self.test_data = random_split(dataset, n_split, generator=gen)
-        self.batch_size = batch_size
+        self.kwargs = kwargs
 
     def train_dataloader(self):
-        return DataLoader(self.train_data, batch_size=self.batch_size)
+        return DataLoader(self.train_data, **self.kwargs)
     
     def val_dataloader(self):
-        return DataLoader(self.val_data, batch_size=self.batch_size)
+        return DataLoader(self.val_data, **self.kwargs)
 
     def test_dataloader(self):
-        return DataLoader(self.test_data, batch_size=self.batch_size)
+        return DataLoader(self.test_data, **self.kwargs)
 
 class SinData(BaseData):
     def __init__(self, n_seq, **kwargs):
