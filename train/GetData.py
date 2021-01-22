@@ -1,17 +1,16 @@
 import numpy as np
 import pandas as pd
-import torch
-from torch import Generator, FloatTensor
-from torch.utils.data import DataLoader, random_split, TensorDataset
+from torch import empty, unsqueeze, Generator, FloatTensor
+from torch.utils.data import random_split, DataLoader, TensorDataset
 from pytorch_lightning import LightningDataModule
 
 def make_lag(n_seq, y):
     n = y.shape[0]
-    X = torch.empty((n-n_seq, n_seq))
+    X = empty((n-n_seq, n_seq))
     for i in range(n_seq):
         X[:, i] = y[i:n-n_seq+i]
     y = y[n_seq:]
-    return X, torch.unsqueeze(y, -1)
+    return X, unsqueeze(y, -1)
 
 class BaseData(LightningDataModule):
     def __init__(self, dataset, val_split=0.2, test_split=0.2, random_seed=7, **kwargs):
@@ -45,5 +44,11 @@ class SunspotData(BaseData):
         df.columns = ['Date', 'Sunspot']
         y = df['Sunspot'].to_numpy()
         X, y = make_lag(n_seq, FloatTensor(y))
-        X = torch.unsqueeze(X, -1)
-        super().__init__(TensorDataset(X, y), **kwargs)
+        super().__init__(TensorDataset(unsqueeze(X, -1), y), **kwargs)
+
+class ElectricData(BaseData):
+    def __init__(self, n_seq, **kwargs):
+        df = pd.read_csv('../rawdata/electric.csv', index_col='Date')
+        y = df['Demand'].to_numpy()
+        X, y = make_lag(n_seq, FloatTensor(y))
+        super().__init__(TensorDataset(unsqueeze(X, -1), y), **kwargs)

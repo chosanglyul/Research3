@@ -2,3 +2,4 @@ lightning_logs
 .ipynb_checkpoints
 __pycache__
 .tmp.drivedownload
+debug.log

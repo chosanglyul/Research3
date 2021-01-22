@@ -1,7 +1,7 @@
 import torch
-import pytorch_lightning as pl
+from pytorch_lightning import LightningModule
 
-class BaseModel(pl.LightningModule):
+class BaseModel(LightningModule):
     def __init__(self, loss_fn, metrics_fn=[], optim=torch.optim.Adam, lr=1e-3):
         super().__init__()
         self.metrics_fn = metrics_fn
