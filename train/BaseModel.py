@@ -2,8 +2,10 @@ import torch
 from pytorch_lightning import LightningModule
 
 class BaseModel(LightningModule):
-    def __init__(self, loss_fn, metrics_fn=[], optim=torch.optim.Adam, lr=1e-3):
+    def __init__(self, loss_fn, metrics_fn=[], optim=torch.optim.Adam, lr=1e-3, device=None):
         super().__init__()
+        if device is None: self.dev = ('cuda' if torch.cuda.is_available() else 'cpu')
+        else: self.dev = device
         self.metrics_fn = metrics_fn
         self.loss_fn = loss_fn
         self.optim = optim
