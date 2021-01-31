@@ -1,4 +1,7 @@
 lightning_logs
+TB_logs
+CSV_logs
+TT_logs
 .ipynb_checkpoints
 __pycache__
 .tmp.drivedownload

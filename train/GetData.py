@@ -37,13 +37,13 @@ class BaseData(LightningDataModule):
         return DataLoader(self.test_data, **self.kwargs)
 
 class SinData(BaseData):
-    def __init__(self, n_X, n_y=1, **kwargs):
+    def __init__(self, n_X, n_y, **kwargs):
         t = np.linspace(0, 300, num=3000, endpoint=False) 
         X, y = make_lag(n_X, n_y, FloatTensor(np.sin(t)))
         super().__init__(TensorDataset(X, y), **kwargs)
         
 class SunspotData(BaseData):
-    def __init__(self, n_X, n_y=1, **kwargs):
+    def __init__(self, n_X, n_y, **kwargs):
         df = pd.read_csv('../rawdata/sunspots.csv', index_col='Unnamed: 0')
         df.columns = ['Date', 'Sunspot']
         y = df['Sunspot'].to_numpy()
@@ -51,7 +51,7 @@ class SunspotData(BaseData):
         super().__init__(TensorDataset(unsqueeze(X, -1), y), **kwargs)
 
 class ElectricData(BaseData):
-    def __init__(self, n_X, n_y=1, **kwargs):
+    def __init__(self, n_X, n_y, **kwargs):
         df = pd.read_csv('../rawdata/electric.csv', index_col='Date')
         y = df['Demand'].to_numpy()
         X, y = make_lag(n_X, n_y, FloatTensor(y))
