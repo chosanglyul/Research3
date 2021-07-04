@@ -24,9 +24,9 @@ class BaseModel(LightningModule):
         self.time['time(ms)/forward'] = (datetime.now()-sttime) / timedelta(milliseconds=1)
         return t, y
     
-    def backward(self, loss, optimizer, optimizer_idx, *args, **kwargs):
+    def backward(self, *args, **kwargs):
         sttime = datetime.now()
-        loss.backward(*args, **kwargs)
+        super().backward(*args, **kwargs)
         self.time['time(ms)/backward'] = (datetime.now()-sttime) / timedelta(milliseconds=1)
         
     def on_after_backward(self):
@@ -35,7 +35,7 @@ class BaseModel(LightningModule):
     def log_metrics(self, h, y, step_name):
         metrics = {'{}/{}'.format(name, step_name) : fn(h, y) for fn, name in self.metrics_fn}
         metrics['loss/{}'.format(step_name)] = self.loss_fn(h, y)
-        self.log_dict(metrics, on_step=False, on_epoch=True)
+        self.log_dict(metrics, on_step=False, on_epoch=True, prog_bar=True)
         return metrics['loss/{}'.format(step_name)]
     
     def training_step(self, train_batch, batch_idx):
